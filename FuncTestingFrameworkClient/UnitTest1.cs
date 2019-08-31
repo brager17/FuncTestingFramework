@@ -45,7 +45,6 @@ namespace FuncTestingFrameworkClient
         {
             char s = (char)128;
             Console.WriteLine(s);
-            
             Func<int, int> func = x => 1;
             var call = Expression.Call(Expression.Constant(func.Target), func.Method, Expression.Constant(1));
             var configuration = Builder
