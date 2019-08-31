@@ -12,25 +12,43 @@ type TupleElementTypes = Type array
 [<RequireQualifiedAccess>]
 module generator =
     let newNextUnit() = ()
+
     let newNextArg i = Random().Next i
+
     let newNextArgs i j = Random().Next(i, j)
+
     let _int_32() = Random().Next()
+
     let _int_64(): int64 = int64 (_int_32()) * int64 (_int_32())
+
+    let rec intervalInt64 (min: int64) (max: int64): int64 =
+        if (min < 0L && max > Int64.MaxValue + min)
+        then if Random().Next() % 2 = 0 then intervalInt64 min 0L else intervalInt64 0L max
+        else int64 (double (max - min) * (Random().NextDouble())) + min
+
     let char() = Convert.ToChar (if _int_32() % 2 = 0 then newNextArgs 65 90 else newNextArgs 97 122)
+
     let string() = seq { for _ in 0..36 -> char() } |> String.Concat
+
     let stringInterval min max =
         seq { while true do yield char() }
         |> Seq.take (newNextArgs min max)
         |> String.Concat
+
     let bool() = _int_32() % 2 = 0
+
     let _decimal() = decimal (_int_32()) * decimal (Random().NextDouble())
-    let rec generateDecimal (min:decimal) (max:decimal) :decimal=
-        if(min<0M && max>Decimal.MaxValue+min)
-        then if Random().Next()%2=0 then generateDecimal 0M max else generateDecimal min 0M
-        else (max-min)*(decimal(Random().NextDouble()))+min
-    let date() =
-        let v = _int_64()
-        DateTime <| (if v < 0L then (-1L * v) else v) % DateTime.MaxValue.Ticks
+
+    let rec generateDecimal (min: decimal) (max: decimal): decimal =
+        if (min < 0M && max > Decimal.MaxValue + min)
+        then if Random().Next() % 2 = 0 then generateDecimal 0M max else generateDecimal min 0M
+        else (max - min) * (decimal (Random().NextDouble())) + min
+
+    let _dateTime (min: DateTime) (max: DateTime) =
+        let s = intervalInt64 min.Ticks max.Ticks
+        DateTime(s)
+
+    let date() = _dateTime DateTime.MinValue DateTime.MaxValue
 
 [<RequireQualifiedAccess>]
 module FunctionTester =
@@ -90,8 +108,9 @@ type Int<'a> = Int of (Expression<Action<'a>> list * Expression<Func<'a, int>>)
 type Decimal<'a> = Decimal of (Expression<Action<'a>> list * Expression<Func<'a, decimal>>)
 type Boolean<'a> = Boolean of (Expression<Action<'a>> list * Expression<Func<'a, bool>>)
 type Date<'a> = Date of (Expression<Action<'a>> list * Expression<Func<'a, DateTime>>)
-
 type String<'a> = String of (Expression<Action<'a>> list * Expression<Func<'a, string>>)
+type Sequance<'a, 'seqType> = Sequance of (Expression<Action<'a>> list * Expression<Func<'a, seq<'seqType>>>)
+type PipeSequance<'a, 'seqType> = Sequance of (Expression<Action<'a>> list * Expression<Func<'a, seq<'seqType>>>)
 
 //type Configuration<'a> =
 //    |Object of Accumulator<'a>

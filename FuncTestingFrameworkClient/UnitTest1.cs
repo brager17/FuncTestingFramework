@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
@@ -25,11 +26,15 @@ namespace FuncTestingFrameworkClient
         [Range(1, 100)]
         public int Year { get; set; }
 
+        public DateTime Birthday { get; set; }
+
         public string Name { get; set; }
         public NestedPerson NestedPerson { get; set; }
 
 //        public bool IsAdult { get; set; }
         public decimal VisualAcuity { get; set; }
+
+        public IEnumerable<long> SalaryByMonth { get; set; }
     }
 
     public class UnitTest1
