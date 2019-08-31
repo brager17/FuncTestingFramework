@@ -128,9 +128,13 @@ open System.Collections.Concurrent
 open System.Collections.Generic
 open System.Reflection
 
+let t<'a>() =
+    let s = typeof<'a>
+    0
+    
 [<EntryPoint>]
 let main (args) =
-    
+   t()
    0
 
 

@@ -22,12 +22,12 @@ let mtdMyNameAndArgsCount<'a> name countArgs =
 
 
 module Expressions =
-    let useValue (e: Expression<Func<'a, 'b>>) value: Expression<Action<'a>> =
+    let useValue (e: Expression<Func<'a, 'b>>) (value:'b): Expression<Action<'a>> =
         let assign' = assign e.Body (consWithType value)
         lambda assign' (e.Parameters |> Seq.toArray)
 
     let ignore (e: Expression<Func<'a, 'b>>): Expression<Action<'a>> =
         let d = Unchecked.defaultof<'b>
-        useValue e <| d
+        useValue e <| d 
 
 

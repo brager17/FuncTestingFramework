@@ -8,17 +8,17 @@ open System.Runtime.CompilerServices
 
 module IntExpressions =
     let private rnd = new Random();
-    let private callNext_2 (l:int) (r:int) = call (consWithType rnd) (mtdMyNameAndArgsCount<Random> "Next" 2) [ consWithType l; consWithType r ]
+    let private callNext_2 (l:int) (r:int) = call (cons rnd) (mtdMyNameAndArgsCount<Random> "Next" 2) [ cons l; cons r ]
 
     let between (e: Expression<Func<'a, int>>) l r: Expression<Action<'a>> =
         let exprCall = callNext_2 l r
         let assign' = assign e.Body exprCall
         lambda assign' (e.Parameters |> Seq.toArray)
 
-    let min<'a> (e: Expression<Func<'a, int>>) l: Expression<Action<'a>> =
+    let min (e: Expression<Func<'a, int>>) l: Expression<Action<'a>> =
         between e l Int32.MaxValue
 
-    let max<'a> (e: Expression<Func<'a, int>>) r: Expression<Action<'a>> =
+    let max (e: Expression<Func<'a, int>>) r: Expression<Action<'a>> =
         between e Int32.MinValue r
 
     let negative (e: Expression<Func<'a, int>>): Expression<Action<'a>> =

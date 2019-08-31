@@ -84,8 +84,11 @@ namespace FuncTestingFrameworkClient
         }
 
 
-        public static IEnumerable<object[]> GenerateRandomInt32Less10000 =>
-            Enumerable.Range(1, 100).Select(x => new object[] {new Random().Next(1, 1000)});
+        public static IEnumerable<object[]> GenerateRandomInt32Less10000()
+        {
+            var random = new Random();
+            return Enumerable.Range(1, 100).Select(x => new object[] {random.Next(1, 1000)});
+        }
 
         public static IEnumerable<object[]> String_100 => RandomString100();
     }
