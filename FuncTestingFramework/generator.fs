@@ -1,6 +1,8 @@
 
 module FuncTestingFramework.generator
 open System
+open System
+open System
 open System.Linq.Expressions
 open Microsoft.FSharp.Reflection
 
@@ -15,14 +17,17 @@ module generator =
     let _int_32() = Random().Next()
     let _int_64(): int64 = int64 (_int_32()) * int64 (_int_32())
     let char() = Convert.ToChar (if _int_32() % 2 = 0 then newNextArgs 65 90 else newNextArgs 97 122)
-    let string() = seq{for _ in 0..36 -> char()} |> String.Concat
+    let string() = seq { for _ in 0..36 -> char() } |> String.Concat
     let stringInterval min max =
         seq { while true do yield char() }
-        |> Seq.take ((newNextArgs min max))
+        |> Seq.take (newNextArgs min max)
         |> String.Concat
-
-    let stringLegnth length = stringInterval length length
-
+    let bool() = _int_32() % 2 = 0
+    let _decimal() = decimal (_int_32()) * decimal (Random().NextDouble())
+    let rec generateDecimal (min:decimal) (max:decimal) :decimal=
+        if(min<0M && max>Decimal.MaxValue+min)
+        then if Random().Next()%2=0 then generateDecimal 0M max else generateDecimal min 0M
+        else (max-min)*(decimal(Random().NextDouble()))+min
     let date() =
         let v = _int_64()
         DateTime <| (if v < 0L then (-1L * v) else v) % DateTime.MaxValue.Ticks
@@ -35,6 +40,8 @@ module FunctionTester =
         | Int64'
         | String'
         | DateTime'
+        | Decimal'
+        | Boolean'
         | Object'
         | Tuple of TupleElementTypes
         | Class
@@ -47,6 +54,8 @@ module FunctionTester =
             | t when t = typeof<Int64> -> Int64'
             | t when t = typeof<string> -> String'
             | t when t = typeof<DateTime> -> DateTime'
+            | t when t = typeof<Decimal> -> Decimal'
+            | t when t = typeof<bool> -> Boolean'
             | t when t = typeof<Tuple> -> Tuple <| FSharpType.GetTupleElements type'
             | t when t.IsClass -> Class
             | t when FSharpType.IsRecord t -> Record
@@ -60,6 +69,8 @@ module FunctionTester =
         | GetType Int64' -> generator._int_64() :> obj
         | GetType String' -> generator.string() :> obj
         | GetType DateTime' -> generator.date() :> obj
+        | GetType Boolean' -> generator.bool() :> obj
+        | GetType Decimal' -> generator._decimal() :> obj
         | GetType(Tuple items) ->
             let values = items |> Seq.map (fun x -> generateByType x) |> Seq.toArray
             FSharpValue.MakeTuple(values, tp)

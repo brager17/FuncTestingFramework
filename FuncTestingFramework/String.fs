@@ -4,14 +4,13 @@ open System.Linq.Expressions
 open System.Runtime.CompilerServices
 open FuncTestingFramework.generator
 open FuncTestingFramework.ExpressionBuilder
+open FuncTestingFramework.ExpressionBuilder
 
 module StringExpressions =
-    let intervalLengthStringMethod (e: Expression<Func<'a, string>>) l r : Expression<Action<'a>> =
+    let intervalLengthStringMethod (e: Expression<Func<'a, string>>) (l:int) (r:int) : Expression<Action<'a>> =
         let intervalStringFunc = (Func<int,int,string>(generator.stringInterval));
         let callIntervalStringFunc = call (cons intervalStringFunc.Target) intervalStringFunc.Method [cons l;cons r]
-        let assign' = assign e.Body callIntervalStringFunc
-        let lambda' = lambda<Action<'a>> assign' (e.Parameters|> Seq.toArray)
-        lambda'
+        Expressions.buildMutableAction callIntervalStringFunc e
     
     let maxLengthStringCallMethod (e: Expression<Func<'a, string>>) (count:int): Expression<Action<'a>> =
         intervalLengthStringMethod e 0 count

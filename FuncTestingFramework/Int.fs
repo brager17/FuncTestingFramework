@@ -12,8 +12,8 @@ module IntExpressions =
 
     let between (e: Expression<Func<'a, int>>) l r: Expression<Action<'a>> =
         let exprCall = callNext_2 l r
-        let assign' = assign e.Body exprCall
-        lambda assign' (e.Parameters |> Seq.toArray)
+        Expressions.buildMutableAction exprCall e
+
 
     let min (e: Expression<Func<'a, int>>) l: Expression<Action<'a>> =
         between e l Int32.MaxValue

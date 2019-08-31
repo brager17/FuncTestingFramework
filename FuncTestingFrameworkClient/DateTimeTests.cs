@@ -1,4 +1,10 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using AutoFixture;
+using AutoFixture.Xunit2;
 using FuncTestingFramework;
+using Xunit;
 
 namespace FuncTestingFrameworkClient
 {
@@ -8,8 +14,9 @@ namespace FuncTestingFrameworkClient
 
         public DateTimeTests() => Builder = new generator.ConfigurationBuilder();
 
-        public void UseValueTest()
+        public void UseValueTest(Person[] person)
         {
+          
         }
 
         public void IgnoreTest()

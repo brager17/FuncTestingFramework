@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using AutoFixture;
 
 namespace FuncTestingFrameworkClient
 {
@@ -39,7 +40,8 @@ namespace FuncTestingFrameworkClient
         public static IEnumerable<object[]> RandomDecimal00()
         {
             return Enumerable.Range(1, 100)
-                .Select(_ => new object[] {(decimal) rnd.NextDouble() * (decimal) rnd.NextDouble()});
+                .Select(_ => new object[]
+                    {(decimal) rnd.Next(int.MinValue, int.MaxValue) * (decimal) rnd.NextDouble()});
         }
 
         public static IEnumerable<object[]> RandomBoolean100()
@@ -57,5 +59,7 @@ namespace FuncTestingFrameworkClient
             l == 0 && r != 0 ? rnd.Next(int.MinValue, r) :
             l != 0 && r == 0 ? rnd.Next(l, int.MaxValue) :
             rnd.Next();
+
+        public static decimal GetRandomDecimal(int l = 0, int r = 0) => new Fixture().Create<decimal>();
     }
 }

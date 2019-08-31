@@ -1,11 +1,11 @@
 module FuncTestingFramework.ExpressionBuilder
 open System
+open System
+open System
 open System.Linq.Expressions
 
-let consWithType (a: 'a) =
-    Expression.Constant(a, typeof<'a>)
-
-let cons a = Expression.Constant a
+let consWithType (a:'a) = Expression.Constant (a,typeof<'a>)
+let cons = Expression.Constant
 
 let lambda<'a> e p = Expression.Lambda<'a>(e, p)
 
@@ -22,6 +22,11 @@ let mtdMyNameAndArgsCount<'a> name countArgs =
 
 
 module Expressions =
+    
+    let buildMutableAction (exprCall:MethodCallExpression) (e: Expression<Func<'a, 'b>>) :Expression<Action<'a>> =
+        let assign' = assign e.Body exprCall
+        lambda assign' (e.Parameters |> Seq.toArray)
+    
     let useValue (e: Expression<Func<'a, 'b>>) (value:'b): Expression<Action<'a>> =
         let assign' = assign e.Body (consWithType value)
         lambda assign' (e.Parameters |> Seq.toArray)

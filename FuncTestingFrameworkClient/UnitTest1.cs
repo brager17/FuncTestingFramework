@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -21,12 +22,14 @@ namespace FuncTestingFrameworkClient
 
     public class Person
     {
+        [Range(1, 100)]
         public int Year { get; set; }
+
         public string Name { get; set; }
         public NestedPerson NestedPerson { get; set; }
 
 //        public bool IsAdult { get; set; }
-//        public decimal VisualAcuity { get; set; }
+        public decimal VisualAcuity { get; set; }
     }
 
     public class UnitTest1
@@ -43,16 +46,8 @@ namespace FuncTestingFrameworkClient
         [Fact]
         public void BetweenTest()
         {
-            char s = (char)128;
-            Console.WriteLine(s);
-            Func<int, int> func = x => 1;
-            var call = Expression.Call(Expression.Constant(func.Target), func.Method, Expression.Constant(1));
-            var configuration = Builder
-                .Build<Person>()
-                .For(x => x.Year)
-                .Between(1, 10);
-
-            var value = FSTests.FunctionTester.gen(configuration);
+            var s = int.MinValue;
+            var t = s - 1;
         }
     }
 }
