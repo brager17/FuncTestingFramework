@@ -1,73 +1,15 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Extensions;
 using FuncTestingFramework;
-using FuncTestingFramework.Extensions;
 using Kimedics;
 using Xunit;
-
+using FuncTestingFramework.ObjectExtensions;
 namespace FuncTestingFrameworkClient
 {
     public class IntTest
     {
-        public static IEnumerable<object[]> RandomTuple2_100()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                var l = 0;
-                var r = 0;
-
-                while (l >= r)
-                {
-                    l = GetRandomIntValue();
-                    r = GetRandomIntValue();
-                }
-
-                yield return new object[] {l, r};
-            }
-        }
-
-        public static IEnumerable<object[]> RandomInt100()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                yield return new object[] {GetRandomIntValue()};
-            }
-        }
-
-        public static IEnumerable<object[]> RandomBoolean100()
-        {
-            for (int i = 0; i < 100; i++)
-            {
-                yield return new object[] {GetRandomIntValue() % 2 == 0};
-            }
-        }
-
-        private static Random rnd = new Random();
-
-        public static int GetRandomIntValue(int l = 0, int r = 0) =>
-            l == 0 && r == 0 ? rnd.Next() :
-            l == 0 && r != 0 ? rnd.Next(int.MinValue, r) :
-            l != 0 && r == 0 ? rnd.Next(l, int.MaxValue) :
-            rnd.Next();
-
         [Theory]
-        [MemberData(nameof(RandomTuple2_1000))]
-        public void BetweenTest(int left, int rigth)
-        {
-            var configuration = Builder
-                .Build<Person>()
-                .For(x => x.Year)
-                .Between(left, rigth);
-
-            var value = FSTests.FunctionTester.gen(configuration);
-
-            Assert.True(value.Year > left && value.Year < rigth);
-        }
-
-        [Theory]
-        [MemberData(nameof(RandomInt1000))]
+        [MemberData(nameof(RandomInt100))]
         public void MinTest(int @int)
         {
             var configurationMin = Builder
@@ -79,7 +21,7 @@ namespace FuncTestingFrameworkClient
         }
 
         [Theory]
-        [MemberData(nameof(RandomInt1000))]
+        [MemberData(nameof(RandomInt100))]
         public void MaxTest(int @int)
         {
             var configurationMax = Builder
@@ -112,7 +54,7 @@ namespace FuncTestingFrameworkClient
 
 
         [Theory]
-        [MemberData(nameof(RandomInt1000))]
+        [MemberData(nameof(RandomInt100))]
         public void UseValueTest(int value)
         {
             var configurationMax = Builder
@@ -123,7 +65,7 @@ namespace FuncTestingFrameworkClient
         }
 
         [Theory]
-        [MemberData(nameof(RandomInt1000))]
+        [MemberData(nameof(RandomInt100))]
         public void NestedUseValueTest(int value)
         {
             var configurationMax = Builder
@@ -145,5 +87,7 @@ namespace FuncTestingFrameworkClient
 
         private readonly generator.ConfigurationBuilder Builder;
         public IntTest() => Builder = new generator.ConfigurationBuilder();
+
+        public static IEnumerable<object[]> RandomInt100 => Generators.RandomInt100();
     }
 }

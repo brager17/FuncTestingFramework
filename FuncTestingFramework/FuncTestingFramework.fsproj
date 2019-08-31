@@ -8,6 +8,7 @@
     <ItemGroup>
         <Compile Include="generator.fs" />
         <Compile Include="ExpressionBuilder.fs" />
+        <Compile Include="ObjectExtensions.fs" />
         <Compile Include="String.fs" />
         <Compile Include="Int.fs" />
         <Compile Include="Program.fs" />

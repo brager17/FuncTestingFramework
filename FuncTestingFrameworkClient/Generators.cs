@@ -1,13 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FuncTestingFrameworkClient
 {
     public static class Generators
     {
-        public static IEnumerable<object[]> RandomTuple2_1000()
+        public static IEnumerable<object[]> RandomTuple2_100()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var l = 0;
                 var r = 0;
@@ -22,22 +23,33 @@ namespace FuncTestingFrameworkClient
             }
         }
 
-        public static IEnumerable<object[]> RandomInt1000()
+        public static IEnumerable<object[]> RandomInt100()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 yield return new object[] {GetRandomIntValue()};
             }
         }
 
-        public static IEnumerable<object[]> RandomBoolean1000()
+        public static IEnumerable<object[]> RandomString100()
         {
-            for (int i = 0; i < 1000; i++)
+            return Enumerable.Range(1, 100).Select(_ => new object[] {Guid.NewGuid().ToString()});
+        }
+
+        public static IEnumerable<object[]> RandomDecimal00()
+        {
+            return Enumerable.Range(1, 100)
+                .Select(_ => new object[] {(decimal) rnd.NextDouble() * (decimal) rnd.NextDouble()});
+        }
+
+        public static IEnumerable<object[]> RandomBoolean100()
+        {
+            for (int i = 0; i < 100; i++)
             {
                 yield return new object[] {GetRandomIntValue() % 2 == 0};
             }
         }
-        
+
         private static Random rnd = new Random();
 
         public static int GetRandomIntValue(int l = 0, int r = 0) =>

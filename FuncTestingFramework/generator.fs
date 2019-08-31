@@ -6,6 +6,7 @@ open Microsoft.FSharp.Reflection
 
 type TupleElementTypes = Type array
 
+
 [<RequireQualifiedAccess>]
 module generator =
     let newNextUnit() = ()
@@ -13,7 +14,15 @@ module generator =
     let newNextArgs i j = Random().Next(i, j)
     let _int_32() = Random().Next()
     let _int_64(): int64 = int64 (_int_32()) * int64 (_int_32())
-    let string() = Guid.NewGuid().ToString()
+    let char() = Convert.ToChar (if _int_32() % 2 = 0 then newNextArgs 65 90 else newNextArgs 97 122)
+    let string() = seq{for _ in 0..36 -> char()} |> String.Concat
+    let stringInterval min max =
+        seq { while true do yield char() }
+        |> Seq.take ((newNextArgs min max))
+        |> String.Concat
+
+    let stringLegnth length = stringInterval length length
+
     let date() =
         let v = _int_64()
         DateTime <| (if v < 0L then (-1L * v) else v) % DateTime.MaxValue.Ticks

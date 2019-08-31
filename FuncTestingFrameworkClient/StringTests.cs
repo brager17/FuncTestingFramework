@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using FuncTestingFramework;
 using FuncTestingFramework.Extensions;
+using FuncTestingFramework.ObjectExtensions;
 using Kimedics;
 using Xunit;
 using Xunit.Abstractions;
@@ -23,9 +24,8 @@ namespace FuncTestingFrameworkClient
 
         [Theory]
         [MemberData(nameof(GenerateRandomInt32Less10000))]
-        public void MinLength(int length)
+        public void MaxLength(int length)
         {
-            _outputHelper.WriteLine(Guid.NewGuid().ToString().Length.ToString());
             var configuration = Builder.Build<Person>()
                 .For(x => x.Name)
                 .MaxLength(length);
@@ -34,7 +34,59 @@ namespace FuncTestingFrameworkClient
             Assert.True(obj.Name.Length <= length);
         }
 
+
+        [Theory]
+        [MemberData(nameof(GenerateRandomInt32Less10000))]
+        public void MinLength(int length)
+        {
+            var configuration = Builder.Build<Person>()
+                .For(x => x.Name)
+                .MinLength(length);
+
+            var obj = FSTests.FunctionTester.gen(configuration);
+            Assert.True(obj.Name.Length >= length);
+        }
+
+        [Theory]
+        [MemberData(nameof(String_100))]
+        public void UseValueTest(string value)
+        {
+            var configuration = Builder.Build<Person>()
+                .For(x => x.Name)
+                .UseValue(value);
+
+            var obj = FSTests.FunctionTester.gen(configuration);
+            Assert.Equal(value, obj.Name);
+        }
+
+        [Fact]
+        public void IgnoreTest()
+        {
+            var configuration = Builder.Build<Person>()
+                .For(x => x.Name)
+                .Ignore();
+
+            var obj = FSTests.FunctionTester.gen(configuration);
+            Assert.Equal(default(string), obj.Name);
+        }
+
+
+        [Theory]
+        [MemberData(nameof(GenerateRandomInt32Less10000))]
+        public void LengthTest(int length)
+        {
+            var configuration = Builder.Build<Person>()
+                .For(x => x.Name)
+                .Length(length);
+
+            var obj = FSTests.FunctionTester.gen(configuration);
+            Assert.True(obj.Name.Length == length);
+        }
+
+
         public static IEnumerable<object[]> GenerateRandomInt32Less10000 =>
-            Enumerable.Range(1, 10000).Select(x => new object[] {new Random().Next(1, 1000)});
+            Enumerable.Range(1, 100).Select(x => new object[] {new Random().Next(1, 1000)});
+
+        public static IEnumerable<object[]> String_100 => RandomString100();
     }
 }

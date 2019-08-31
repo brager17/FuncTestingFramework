@@ -1,8 +1,5 @@
-﻿
-module Kimedics.FSTests
-open FuncTestingFramework.Extensions
+﻿module Kimedics.FSTests
 open FuncTestingFramework.generator
-open System
 open System
 open System.Linq.Expressions
 open System.Runtime.CompilerServices
@@ -18,7 +15,6 @@ module generator =
     let _int_32() = Random().Next()
     let _int_64(): int64 =
      int64 (_int_32()) * int64 (_int_32())
-    let string() = Guid.NewGuid().ToString()
 
     let date() =
         let v = _int_64()
@@ -132,72 +128,9 @@ open System.Collections.Concurrent
 open System.Collections.Generic
 open System.Reflection
 
-let isPrime x =
-        let rec primeCheck count =
-            if count = x then true
-            elif x % count = 0 then false
-            else primeCheck (count + 1)
-        if x = 1
-         then true
-         else primeCheck 2
-
-let computePrimes tasksToSpawn maxValue =
-        let range = maxValue / tasksToSpawn
-        let primes = new ConcurrentBag<int>()
-        let tasks =
-            [|
-                for i in 0..tasksToSpawn - 1 do
-                    yield Task.Factory.StartNew (
-                                                   Action(fun () ->
-                                                       for x = i * range to (i + 1) * range - 1 do
-                                                           if isPrime x then primes.Add(x))
-                                               )
-            |]
-        Task.WaitAll(tasks)
-        new HashSet<_>(primes :> seq<int>)
-
-
-let describeType (ty: Type) =
-    let bindingFlags =
-        BindingFlags.Public ||| BindingFlags.NonPublic ||| BindingFlags.Instance ||| BindingFlags.Static ||| BindingFlags.DeclaredOnly
-    let methods =
-        ty.GetMethods(bindingFlags)
-        |> Array.fold (fun desc meth -> desc + sprintf " %s" meth.Name) ""
-    let props =
-        ty.GetProperties(bindingFlags)
-        |> Array.fold (fun desc prop -> desc + sprintf " %s" prop.Name) ""
-    let fields =
-        ty.GetFields(bindingFlags)
-        |> Array.fold (fun desc field -> desc + sprintf " %s" field.Name) ""
-    printfn "Name: %s" ty.Name
-    printfn "Methods:    \n\t%s\n" methods
-    printfn "Properties: \n\t%s\n" props
-    printfn "Fields:     \n\t%s" fields
-
-let (?) (thingey: obj) (propName: string) =
-    let ty = thingey.GetType()
-    match ty.GetProperty(propName) with | null -> false | _ -> true
-
-let (?<-) (thingey: obj) (propName: string) (newValue: 'a) =
-    let prop = thingey.GetType().GetProperty(propName, BindingFlags.Public ||| BindingFlags.Instance)
-    prop.SetValue(thingey, newValue)
-
-type Book(title, author) =
-    let mutable m_currentPage: int option = None
-    member this.Title = title
-    member this.Author = author
-    member this.CurrentPage
-        with get () = m_currentPage
-        and set x = m_currentPage <- x
-    override this.ToString() =
-        match m_currentPage with
-        | Some(pg) -> sprintf "%s by %s, opened to page %d" title author pg
-        | None -> sprintf "%s by %s, not currently opened" title author;
-
 [<EntryPoint>]
 let main (args) =
-   let t = Assembly.GetExecutingAssembly().GetTypes()
-        |> Seq.filter(fun x -> x.Name.Contains("maxLengthCallMethod"))
+    
    0
 
 

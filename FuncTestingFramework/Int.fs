@@ -1,8 +1,32 @@
 namespace Extensions
+open System
+open System.Linq.Expressions
 open FuncTestingFramework.ExpressionBuilder
 open FuncTestingFramework.Extensions
 open FuncTestingFramework.generator
 open System.Runtime.CompilerServices
+
+module IntExpressions =
+    let private rnd = new Random();
+    let private callNext_2 (l:int) (r:int) = call (consWithType rnd) (mtdMyNameAndArgsCount<Random> "Next" 2) [ consWithType l; consWithType r ]
+
+    let between (e: Expression<Func<'a, int>>) l r: Expression<Action<'a>> =
+        let exprCall = callNext_2 l r
+        let assign' = assign e.Body exprCall
+        lambda assign' (e.Parameters |> Seq.toArray)
+
+    let min<'a> (e: Expression<Func<'a, int>>) l: Expression<Action<'a>> =
+        between e l Int32.MaxValue
+
+    let max<'a> (e: Expression<Func<'a, int>>) r: Expression<Action<'a>> =
+        between e Int32.MinValue r
+
+    let negative (e: Expression<Func<'a, int>>): Expression<Action<'a>> =
+        between e Int32.MinValue 0
+
+    let positive (e: Expression<Func<'a, int>>): Expression<Action<'a>> =
+        between e 0 Int32.MaxValue
+
 
 [<Extension>]
 type IntExtensions() =
