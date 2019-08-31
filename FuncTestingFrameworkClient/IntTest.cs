@@ -11,9 +11,9 @@ namespace FuncTestingFrameworkClient
 {
     public class IntTest
     {
-        public static IEnumerable<object[]> RandomTuple2_1000()
+        public static IEnumerable<object[]> RandomTuple2_100()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 var l = 0;
                 var r = 0;
@@ -28,22 +28,22 @@ namespace FuncTestingFrameworkClient
             }
         }
 
-        public static IEnumerable<object[]> RandomInt1000()
+        public static IEnumerable<object[]> RandomInt100()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 yield return new object[] {GetRandomIntValue()};
             }
         }
 
-        public static IEnumerable<object[]> RandomBoolean1000()
+        public static IEnumerable<object[]> RandomBoolean100()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
                 yield return new object[] {GetRandomIntValue() % 2 == 0};
             }
         }
-        
+
         private static Random rnd = new Random();
 
         public static int GetRandomIntValue(int l = 0, int r = 0) =>
@@ -51,7 +51,7 @@ namespace FuncTestingFrameworkClient
             l == 0 && r != 0 ? rnd.Next(int.MinValue, r) :
             l != 0 && r == 0 ? rnd.Next(l, int.MaxValue) :
             rnd.Next();
-        
+
         [Theory]
         [MemberData(nameof(RandomTuple2_1000))]
         public void BetweenTest(int left, int rigth)
@@ -80,7 +80,7 @@ namespace FuncTestingFrameworkClient
 
         [Theory]
         [MemberData(nameof(RandomInt1000))]
-        public void Test(int @int)
+        public void MaxTest(int @int)
         {
             var configurationMax = Builder
                 .Build<Person>()
@@ -122,6 +122,17 @@ namespace FuncTestingFrameworkClient
             Assert.Equal(value, FSTests.FunctionTester.gen(configurationMax).Year);
         }
 
+        [Theory]
+        [MemberData(nameof(RandomInt1000))]
+        public void NestedUseValueTest(int value)
+        {
+            var configurationMax = Builder
+                .Build<Person>()
+                .For(x => x.NestedPerson.Year)
+                .UseValue(value);
+            Assert.Equal(value, FSTests.FunctionTester.gen(configurationMax).NestedPerson.Year);
+        }
+
         [Fact]
         public void IgnoreTest()
         {
@@ -134,6 +145,5 @@ namespace FuncTestingFrameworkClient
 
         private readonly generator.ConfigurationBuilder Builder;
         public IntTest() => Builder = new generator.ConfigurationBuilder();
-
     }
 }
