@@ -1,3 +1,4 @@
+using System;
 using FuncTestingFramework;
 using FuncTestingFramework.DateTimeExtensions;
 using FuncTestingFramework.ObjectExtensions;
@@ -14,13 +15,11 @@ namespace FuncTestingFrameworkClient
 
         public void PipeTest()
         {
+            IConfiguration<int> s = null;
+            
             var ignoreConfiguration = Builder
                 .Build<Person>()
-                .For(x => x.SalaryByMonth)
-                .Pipe(x => x
-                    .Interval1(new Person(), new Person())
-                    .Interval11(null, null));
-
+                .For(x => x.SalaryByMonth);
         }
     }
 }

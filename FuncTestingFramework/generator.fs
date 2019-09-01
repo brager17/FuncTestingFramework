@@ -105,12 +105,18 @@ module FunctionTester =
 type Object<'a> = Object of Expression<Action<'a>> list
 
 type Int<'a> = Int of (Expression<Action<'a>> list * Expression<Func<'a, int>>)
+
 type Decimal<'a> = Decimal of (Expression<Action<'a>> list * Expression<Func<'a, decimal>>)
+
 type Boolean<'a> = Boolean of (Expression<Action<'a>> list * Expression<Func<'a, bool>>)
+
 type Date<'a> = Date of (Expression<Action<'a>> list * Expression<Func<'a, DateTime>>)
+
 type String<'a> = String of (Expression<Action<'a>> list * Expression<Func<'a, string>>)
-type Sequance<'a, 'seqType> = Sequance of (Expression<Action<'a>> list * Expression<Func<'a, seq<'seqType>>>)
-type PipeSequance<'a, 'seqType> = Sequance of (Expression<Action<'a>> list * Expression<Func<'a, seq<'seqType>>>)
+
+
+type SequanceStore<'a,'seqType> = (Expression<Action<'a>> list * Expression<Func<'a, seq<'seqType>>>)
+type Sequance<'a, 'seqType> = Sequance of SequanceStore<'a,'seqType>
 
 //type Configuration<'a> =
 //    |Object of Accumulator<'a>
