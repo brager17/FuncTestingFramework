@@ -1,36 +1,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FuncTestingFramework;
-using FuncTestingFramework.Extensions;
 using FuncTestingFramework.ObjectExtensions;
 using Kimedics;
 using Xunit;
-using Xunit.Abstractions;
 using static FuncTestingFrameworkClient.Generators;
 
 namespace FuncTestingFrameworkClient
 {
     public class StringTests
     {
-        private readonly ITestOutputHelper _outputHelper;
-        private readonly generator.ConfigurationBuilder Builder;
-
-        public StringTests(ITestOutputHelper outputHelper)
-        {
-            _outputHelper = outputHelper;
-            Builder = new generator.ConfigurationBuilder();
-        }
-
         [Theory]
         [MemberData(nameof(GenerateRandomInt32Less10000))]
         public void MaxLength(int length)
         {
-            var configuration = Builder.Build<Person>()
+            var configuration = Configuration.Build<Person>()
                 .For(x => x.Name)
                 .MaxLength(length);
 
-            var obj = FSTests.FunctionTester.gen(configuration);
+            var obj = FSTests.gen(configuration);
             Assert.True(obj.Name.Length <= length);
         }
 
@@ -39,11 +27,11 @@ namespace FuncTestingFrameworkClient
         [MemberData(nameof(GenerateRandomInt32Less10000))]
         public void MinLength(int length)
         {
-            var configuration = Builder.Build<Person>()
+            var configuration = Configuration.Build<Person>()
                 .For(x => x.Name)
                 .MinLength(length);
 
-            var obj = FSTests.FunctionTester.gen(configuration);
+            var obj = FSTests.gen(configuration);
             Assert.True(obj.Name.Length >= length);
         }
 
@@ -51,22 +39,22 @@ namespace FuncTestingFrameworkClient
         [MemberData(nameof(String_100))]
         public void UseValueTest(string value)
         {
-            var configuration = Builder.Build<Person>()
+            var configuration = Configuration.Build<Person>()
                 .For(x => x.Name)
                 .UseValue(value);
 
-            var obj = FSTests.FunctionTester.gen(configuration);
+            var obj = FSTests.gen(configuration);
             Assert.Equal(value, obj.Name);
         }
 
         [Fact]
         public void IgnoreTest()
         {
-            var configuration = Builder.Build<Person>()
-                .For(x => x.Name)
+            var configuration = Configuration
+                .Build<Person>().For(x => x.Name)
                 .Ignore();
 
-            var obj = FSTests.FunctionTester.gen(configuration);
+            var obj = FSTests.gen(configuration);
             Assert.Equal(default(string), obj.Name);
         }
 
@@ -75,11 +63,11 @@ namespace FuncTestingFrameworkClient
         [MemberData(nameof(GenerateRandomInt32Less10000))]
         public void LengthTest(int length)
         {
-            var configuration = Builder.Build<Person>()
+            var configuration = Configuration.Build<Person>()
                 .For(x => x.Name)
                 .Length(length);
 
-            var obj = FSTests.FunctionTester.gen(configuration);
+            var obj = FSTests.gen(configuration);
             Assert.True(obj.Name.Length == length);
         }
 

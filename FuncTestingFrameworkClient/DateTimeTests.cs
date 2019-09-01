@@ -1,11 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AutoFixture;
-using AutoFixture.Xunit2;
-using Extensions;
-using FuncTestingFramework;
-using FuncTestingFramework.DateTimeExtensions;
 using FuncTestingFramework.ObjectExtensions;
 using Kimedics;
 using Xunit;
@@ -14,20 +9,14 @@ namespace FuncTestingFrameworkClient
 {
     public class DateTimeTests
     {
-        private readonly generator.ConfigurationBuilder Builder;
-
-        public DateTimeTests() => Builder = new generator.ConfigurationBuilder();
-
         [Theory]
         [MemberData(nameof(RandomDateTime))]
         public void UseValueTest(DateTime value)
         {
-            var ignoreConfiguration = Builder
-                .Build<Person>()
-                .For(x => x.Birthday)
-                .UseValue(value);
+            var ignoreConfiguration = Configuration.Build<Person>()
+                .For(x => x.Birthday).UseValue(value);
 
-            var result = FSTests.FunctionTester.gen(ignoreConfiguration);
+            var result = FSTests.gen(ignoreConfiguration);
 
             Assert.Equal(value, result.Birthday);
         }
@@ -35,12 +24,10 @@ namespace FuncTestingFrameworkClient
         [Fact]
         public void IgnoreTest()
         {
-            var ignoreConfiguration = Builder
-                .Build<Person>()
-                .For(x => x.Birthday)
-                .Ignore();
+            var ignoreConfiguration = Configuration.Build<Person>()
+                .For(x => x.Birthday).Ignore();
 
-            var result = FSTests.FunctionTester.gen(ignoreConfiguration);
+            var result = FSTests.gen(ignoreConfiguration);
 
             Assert.Equal(default(DateTime), result.Birthday);
         }
@@ -50,12 +37,12 @@ namespace FuncTestingFrameworkClient
         [MemberData(nameof(RandomDateTime))]
         public void MinTest(DateTime min)
         {
-            var ignoreConfiguration = Builder
-                .Build<Person>()
+            var ignoreConfiguration = Configuration.Build<Person>()
                 .For(x => x.Birthday)
                 .Min(min);
 
-            var result = FSTests.FunctionTester.gen(ignoreConfiguration);
+
+            var result = FSTests.gen(ignoreConfiguration);
 
             Assert.True(min < result.Birthday);
         }
@@ -65,12 +52,13 @@ namespace FuncTestingFrameworkClient
         [MemberData(nameof(RandomDateTime))]
         public void MaxTest(DateTime max)
         {
-            var ignoreConfiguration = Builder
+            var ignoreConfiguration = Configuration
                 .Build<Person>()
                 .For(x => x.Birthday)
                 .Max(max);
 
-            var result = FSTests.FunctionTester.gen(ignoreConfiguration);
+
+            var result = FSTests.gen(ignoreConfiguration);
 
             Assert.True(max > result.Birthday);
         }
@@ -82,12 +70,12 @@ namespace FuncTestingFrameworkClient
         {
             var max = value1 > value ? value1 : value;
             var min = value1 < value ? value1 : value;
-            var ignoreConfiguration = Builder
+            var ignoreConfiguration = Configuration
                 .Build<Person>()
                 .For(x => x.Birthday)
                 .Interval(min, max);
 
-            var result = FSTests.FunctionTester.gen(ignoreConfiguration);
+            var result = FSTests.gen(ignoreConfiguration);
 
             Assert.True(min < result.Birthday);
             Assert.True(max > result.Birthday);

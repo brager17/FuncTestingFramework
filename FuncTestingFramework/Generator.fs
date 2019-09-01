@@ -1,13 +1,13 @@
+module FuncTestingFramework.Generator
+open System
+open System.Collections
 
-module FuncTestingFramework.generator
-open System
-open System
-open System
-open System.Linq.Expressions
+open System.Collections
+
+open System.Collections.Generic
+open System.Reflection
 open Microsoft.FSharp.Reflection
-
 type TupleElementTypes = Type array
-
 
 [<RequireQualifiedAccess>]
 module generator =
@@ -64,9 +64,13 @@ module FunctionTester =
         | Tuple of TupleElementTypes
         | Class
         | Record
+        | IEnumerableInt
+        | IEnumerableDateTime
+        | IEnumerableDecimal
+        | IEnumerableClass of Type
         | NotSupported
 
-    let (|GetType|) type' =
+    let rec (|GetType|) type' =
             match type' with
             | t when t = typeof<Int32> -> Int32'
             | t when t = typeof<Int64> -> Int64'
@@ -75,11 +79,21 @@ module FunctionTester =
             | t when t = typeof<Decimal> -> Decimal'
             | t when t = typeof<bool> -> Boolean'
             | t when t = typeof<Tuple> -> Tuple <| FSharpType.GetTupleElements type'
+            | t when t.IsGenericType && t.GetInterfaces() |> Seq.exists (fun interf -> interf = typeof<IEnumerable>) ->
+                let generic = t |> (fun x -> x.GenericTypeArguments |> Array.head)
+                match generic with
+                | GetType Int32' -> IEnumerableInt
+                | GetType DateTime' -> IEnumerableDateTime
+                | GetType Decimal' -> IEnumerableDecimal
+                | GetType Class -> IEnumerableClass generic
+                | _ -> NotSupported
             | t when t.IsClass -> Class
             | t when FSharpType.IsRecord t -> Record
             | _ -> NotSupported
 
     let unit f = f()
+
+    let runTimeCast<'t> (o: obj) = o :?> 't
 
     let rec generateByType (tp: Type) =
         (match tp with
@@ -89,6 +103,10 @@ module FunctionTester =
         | GetType DateTime' -> generator.date() :> obj
         | GetType Boolean' -> generator.bool() :> obj
         | GetType Decimal' -> generator._decimal() :> obj
+        | GetType IEnumerableInt -> Seq.init 100 (fun _ -> generateByType typeof<int> :?> int) :> obj
+        | GetType IEnumerableDecimal -> Seq.init 100 (fun _ -> generateByType typeof<decimal> :?> decimal) :> obj
+        | GetType IEnumerableDateTime -> Seq.init 100 (fun _ -> generateByType typeof<DateTime> :?> DateTime) :> obj
+        | GetType (IEnumerableClass classType)-> Seq.init 100 (fun _ -> generateByType classType) :> obj
         | GetType(Tuple items) ->
             let values = items |> Seq.map (fun x -> generateByType x) |> Seq.toArray
             FSharpValue.MakeTuple(values, tp)
@@ -100,33 +118,4 @@ module FunctionTester =
                 p.SetValue(new', newValue))
             new'
         | _ -> failwith "not supported type")
-
-
-type Object<'a> = Object of Expression<Action<'a>> list
-
-type Int<'a> = Int of (Expression<Action<'a>> list * Expression<Func<'a, int>>)
-
-type Decimal<'a> = Decimal of (Expression<Action<'a>> list * Expression<Func<'a, decimal>>)
-
-type Boolean<'a> = Boolean of (Expression<Action<'a>> list * Expression<Func<'a, bool>>)
-
-type Date<'a> = Date of (Expression<Action<'a>> list * Expression<Func<'a, DateTime>>)
-
-type String<'a> = String of (Expression<Action<'a>> list * Expression<Func<'a, string>>)
-
-
-type SequanceStore<'a,'seqType> = (Expression<Action<'a>> list * Expression<Func<'a, seq<'seqType>>>)
-type Sequance<'a, 'seqType> = Sequance of SequanceStore<'a,'seqType>
-
-//type Configuration<'a> =
-//    |Object of Accumulator<'a>
-//    |Int of Accumulator<'a>
-//    |String of Accumulator<'a>
-
-type ConfigurationBuilder() =
-    member this.Build<'a>(): Object<'a> = Object []
-
-
-
-
 
