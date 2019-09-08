@@ -20,12 +20,14 @@ namespace FuncTestingFrameworkClient
         public string Name { get; set; }
         public NestedPerson NestedPerson { get; set; }
 
-//        public bool IsAdult { get; set; }
+        public bool IsAdult { get; set; }
         public decimal VisualAcuity { get; set; }
 
         public IEnumerable<int> SalaryByMonth { get; set; }
         public IEnumerable<DateTime> Dates { get; set; }
         public IEnumerable<decimal> Decimals { get; set; }
+
+        public IEnumerable<string> Names { get; set; }
 //        public IEnumerable<NestedPerson> Persons { get; set; }
     }
 }

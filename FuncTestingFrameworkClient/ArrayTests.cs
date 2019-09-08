@@ -132,6 +132,32 @@ namespace FuncTestingFrameworkClient
         }
 
 
+        [Theory]
+        [MemberData(nameof(GenerateRandomInt32Less10000))]
+        public void StringLength(int length)
+        {
+            var configuration = Configuration.Build<Person>()
+                .For(x => x.Names)
+                .ForItem(x => x.Length(length));
+
+            var person = FSTests.gen(configuration);
+            Assert.All(person.Names, name => { Assert.Equal(length, name.Length); });
+        }
+
+        [Theory]
+        [MemberData(nameof(GenerateRandomInt32Less10000))]
+        public void StringMin(int min)
+        {
+            var configuration = Configuration.Build<Person>()
+                .For(x => x.Names)
+                .ForItem(x => x.MinLength(min));
+
+            var person = FSTests.gen(configuration);
+            Assert.All(person.Names, name => { Assert.True(min <= name.Length); });
+        }
+
+        
+
         public static IEnumerable<object[]> IntIntervalData()
         {
             for (int i = 0; i < 100; i++)
@@ -158,7 +184,11 @@ namespace FuncTestingFrameworkClient
             }
         }
 
+        public static IEnumerable<object[]> GenerateRandomInt32Less10000()
+        {
+            return Generators.GenerateRandomInt32Less10000();
+        }
+
         public static IEnumerable<object[]> DecimalIntervalData() => DecimalTests.IntervalTestData();
-        
     }
 }

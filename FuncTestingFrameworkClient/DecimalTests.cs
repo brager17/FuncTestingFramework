@@ -1,10 +1,17 @@
+using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using FuncTestingFramework.ObjectExtensions;
 using Kimedics;
 using Xunit;
 
 namespace FuncTestingFrameworkClient
 {
+    public class Class
+    {
+        public int S { get; set; } = 1;
+    }
+
     public class DecimalTests : IDefaultMethodTester<decimal>, IMinMaxIntervalMethodTester<decimal>
     {
         [Theory]

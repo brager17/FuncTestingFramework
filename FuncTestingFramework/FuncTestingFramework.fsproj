@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <OutputType>Exe</OutputType>
         <TargetFramework>netcoreapp2.1</TargetFramework>
     </PropertyGroup>
 
@@ -9,8 +8,8 @@
         <Compile Include="Generator.fs" />
         <Compile Include="ExpressionBuilder.fs" />
         <Compile Include="Object.fs" />
-        <Compile Include="Sequence.fs" />
         <Compile Include="Program.fs" />
+        <None Include="test.fsx" />
     </ItemGroup>
 
     <ItemGroup>
@@ -23,8 +22,11 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="FSharp.Quotations.Evaluator" Version="1.1.3" />
       <PackageReference Include="FSPowerPack.Community" Version="3.0.0" />
       <PackageReference Include="FSPowerPack.Core.Community" Version="3.0.0" />
+      <PackageReference Include="FSPowerPack.Linq.Community" Version="3.0.0" />
+      <PackageReference Include="FSPowerPack.Metadata.Community" Version="3.0.0" />
       <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.3.0-preview-20190808-03" />
     </ItemGroup>
 

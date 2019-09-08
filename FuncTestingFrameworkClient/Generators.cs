@@ -52,6 +52,11 @@ namespace FuncTestingFrameworkClient
             }
         }
 
+        public static IEnumerable<object[]> RandomBoolean1000() =>
+            Enumerable.Range(1, 1000)
+                .Select(_ => new object[] {rnd.Next() % 2 == 1})
+                .ToList();
+
         private static Random rnd = new Random();
 
         public static int GetRandomIntValue(int l = 0, int r = 0) =>
@@ -60,8 +65,13 @@ namespace FuncTestingFrameworkClient
             l != 0 && r == 0 ? rnd.Next(l, int.MaxValue) :
             rnd.Next();
 
+        public static IEnumerable<object[]> GenerateRandomInt32Less10000()
+        {
+            var random = new Random();
+            return Enumerable.Range(1, 100).Select(x => new object[] {random.Next(1, 1000)});
+        }
+
         public static decimal GetRandomDecimal() => new Fixture().Create<decimal>();
         public static DateTime GetRandomDateTime() => new Fixture().Create<DateTime>();
-        
     }
 }
