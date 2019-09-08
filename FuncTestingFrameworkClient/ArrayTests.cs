@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using FuncTestingFramework.ObjectExtensions;
-using Kimedics;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -31,7 +30,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.SalaryByMonth)
                 .ForItem(x => x.Between(min, max));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.SalaryByMonth, salary => { Assert.True(salary > min && salary < max); });
         }
 
@@ -43,7 +42,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.SalaryByMonth)
                 .ForItem(x => x.Max(max));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.SalaryByMonth, salary => { Assert.True(salary < max); });
         }
 
@@ -55,7 +54,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.SalaryByMonth)
                 .ForItem(x => x.Min(min));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.SalaryByMonth, salary => { Assert.True(salary > min); });
         }
 
@@ -67,7 +66,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Dates)
                 .ForItem(x => x.Interval(min, max));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Dates, date => { Assert.True(date > min && date < max); });
         }
 
@@ -79,7 +78,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Dates)
                 .ForItem(x => x.Min(min));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Dates, date => { Assert.True(date > min); });
         }
 
@@ -91,7 +90,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Dates)
                 .ForItem(x => x.Max(max));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Dates, date => { Assert.True(date < max); });
         }
 
@@ -103,7 +102,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Decimals)
                 .ForItem(x => x.Max(max));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Decimals, dec => { Assert.True(dec < max); });
         }
 
@@ -115,7 +114,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Decimals)
                 .ForItem(x => x.Min(min));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Decimals, dec => { Assert.True(dec > min); });
         }
 
@@ -127,7 +126,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Decimals)
                 .ForItem(x => x.Interval(min, max));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Decimals, dec => { Assert.True(dec > min && dec < max); });
         }
 
@@ -140,9 +139,25 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Names)
                 .ForItem(x => x.Length(length));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Names, name => { Assert.Equal(length, name.Length); });
         }
+
+        [Theory]
+        [MemberData(nameof(GenerateRandomInt32Less10000))]
+        public void StringMax(int max)
+        {
+            var configuration = Configuration.Build<Person>()
+                .For(x => x.Names)
+                .ForItem(x => x.MaxLength(max));
+
+            var person = Configuration.gen(configuration);
+            Assert.All(person.Names, name =>
+            {
+                Assert.True(name.Length <= max);
+            });
+        }
+
 
         [Theory]
         [MemberData(nameof(GenerateRandomInt32Less10000))]
@@ -152,11 +167,10 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Names)
                 .ForItem(x => x.MinLength(min));
 
-            var person = FSTests.gen(configuration);
+            var person = Configuration.gen(configuration);
             Assert.All(person.Names, name => { Assert.True(min <= name.Length); });
         }
 
-        
 
         public static IEnumerable<object[]> IntIntervalData()
         {

@@ -1,7 +1,5 @@
 using FuncTestingFramework.ObjectExtensions;
-using Kimedics;
 using Xunit;
-
 namespace FuncTestingFrameworkClient
 {
     public class BooleanTests
@@ -13,7 +11,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.IsAdult).Ignore();
             
             
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.Equal(false,result.IsAdult);
         }
@@ -24,7 +22,7 @@ namespace FuncTestingFrameworkClient
             var ignoreConfiguration = Configuration.Build<Person>()
                 .For(x => x.IsAdult).UseValue(false);
             
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.Equal(false,result.IsAdult);
         }  
@@ -35,7 +33,7 @@ namespace FuncTestingFrameworkClient
             var ignoreConfiguration = Configuration.Build<Person>()
                 .For(x => x.IsAdult).UseValue(true);
             
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.Equal(true,result.IsAdult);
         }

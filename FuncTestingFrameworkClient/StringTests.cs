@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FuncTestingFramework.ObjectExtensions;
-using Kimedics;
 using Xunit;
 using static FuncTestingFrameworkClient.Generators;
 
@@ -18,7 +17,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Name)
                 .MaxLength(length);
 
-            var obj = FSTests.gen(configuration);
+            var obj = Configuration.gen(configuration);
             Assert.True(obj.Name.Length <= length);
         }
 
@@ -31,7 +30,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Name)
                 .MinLength(length);
 
-            var obj = FSTests.gen(configuration);
+            var obj = Configuration.gen(configuration);
             Assert.True(obj.Name.Length >= length);
         }
 
@@ -43,7 +42,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Name)
                 .UseValue(value);
 
-            var obj = FSTests.gen(configuration);
+            var obj = Configuration.gen(configuration);
             Assert.Equal(value, obj.Name);
         }
 
@@ -54,7 +53,7 @@ namespace FuncTestingFrameworkClient
                 .Build<Person>().For(x => x.Name)
                 .Ignore();
 
-            var obj = FSTests.gen(configuration);
+            var obj = Configuration.gen(configuration);
             Assert.Equal(default(string), obj.Name);
         }
 
@@ -67,7 +66,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Name)
                 .Length(length);
 
-            var obj = FSTests.gen(configuration);
+            var obj = Configuration.gen(configuration);
             Assert.True(obj.Name.Length == length);
         }
 

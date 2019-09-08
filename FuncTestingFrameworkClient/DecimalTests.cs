@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using FuncTestingFramework.ObjectExtensions;
-using Kimedics;
 using Xunit;
 
 namespace FuncTestingFrameworkClient
@@ -12,7 +11,7 @@ namespace FuncTestingFrameworkClient
         public int S { get; set; } = 1;
     }
 
-    public class DecimalTests : IDefaultMethodTester<decimal>, IMinMaxIntervalMethodTester<decimal>
+    public class DecimalTests
     {
         [Theory]
         [MemberData(nameof(Decimal_100))]
@@ -23,7 +22,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.VisualAcuity)
                 .UseValue(value);
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
             Assert.Equal(value, result.VisualAcuity);
         }
 
@@ -36,7 +35,7 @@ namespace FuncTestingFrameworkClient
                 .Ignore();
 
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
             Assert.Equal(default(decimal), result.VisualAcuity);
         }
 
@@ -52,7 +51,7 @@ namespace FuncTestingFrameworkClient
                 .Min(minValue);
 
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
             Assert.True(result.VisualAcuity >= minValue);
         }
 
@@ -66,7 +65,7 @@ namespace FuncTestingFrameworkClient
                 .Max(maxValue);
 
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
             Assert.True(result.VisualAcuity <= maxValue);
         }
 
@@ -80,7 +79,7 @@ namespace FuncTestingFrameworkClient
                 .Interval(minValue, maxValue);
 
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
             Assert.True(result.VisualAcuity <= maxValue);
             Assert.True(result.VisualAcuity >= minValue);
         }

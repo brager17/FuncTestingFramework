@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FuncTestingFramework.ObjectExtensions;
-using Kimedics;
 using Xunit;
 
 namespace FuncTestingFrameworkClient
@@ -16,7 +15,7 @@ namespace FuncTestingFrameworkClient
             var ignoreConfiguration = Configuration.Build<Person>()
                 .For(x => x.Birthday).UseValue(value);
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.Equal(value, result.Birthday);
         }
@@ -27,7 +26,7 @@ namespace FuncTestingFrameworkClient
             var ignoreConfiguration = Configuration.Build<Person>()
                 .For(x => x.Birthday).Ignore();
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.Equal(default(DateTime), result.Birthday);
         }
@@ -42,7 +41,7 @@ namespace FuncTestingFrameworkClient
                 .Min(min);
 
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.True(min < result.Birthday);
         }
@@ -58,7 +57,7 @@ namespace FuncTestingFrameworkClient
                 .Max(max);
 
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.True(max > result.Birthday);
         }
@@ -75,7 +74,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Birthday)
                 .Interval(min, max);
 
-            var result = FSTests.gen(ignoreConfiguration);
+            var result = Configuration.gen(ignoreConfiguration);
 
             Assert.True(min < result.Birthday);
             Assert.True(max > result.Birthday);

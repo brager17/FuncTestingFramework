@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using Kimedics;
 using Xunit;
 using FuncTestingFramework.ObjectExtensions;
+
 namespace FuncTestingFrameworkClient
 {
     public class IntTest
@@ -15,7 +15,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Year)
                 .Min(@int);
 
-            Assert.True(FSTests.gen(configurationMin).Year > @int);
+            Assert.True(Configuration.gen(configurationMin).Year > @int);
         }
 
         [Theory]
@@ -25,9 +25,12 @@ namespace FuncTestingFrameworkClient
             var configurationMax = Configuration
                 .Build<Person>()
                 .For(x => x.Year)
-                .Max(@int);
+                .Max(@int)
+                .Min(123)
+                .For(x => x.Name)
+                .Ignore();
 
-            Assert.True(FSTests.gen(configurationMax).Year < @int);
+            Assert.True(Configuration.gen(configurationMax).Year < @int);
         }
 
 
@@ -39,7 +42,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Year)
                 .Positive();
 
-            Assert.True(FSTests.gen(configurationMax).Year > 0);
+            Assert.True(Configuration.gen(configurationMax).Year > 0);
         }
 
         [Fact]
@@ -50,7 +53,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Year)
                 .Negative();
 
-            Assert.True(FSTests.gen(configurationMax).Year < 0);
+            Assert.True(Configuration.gen(configurationMax).Year < 0);
         }
 
 
@@ -63,7 +66,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Year)
                 .UseValue(value);
 
-            Assert.Equal(value, FSTests.gen(configurationMax).Year);
+            Assert.Equal(value, Configuration.gen(configurationMax).Year);
         }
 
         [Theory]
@@ -75,7 +78,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.NestedPerson.Year)
                 .UseValue(value);
 
-            Assert.Equal(value, FSTests.gen(configurationMax).NestedPerson.Year);
+            Assert.Equal(value, Configuration.gen(configurationMax).NestedPerson.Year);
         }
 
         [Fact]
@@ -86,7 +89,7 @@ namespace FuncTestingFrameworkClient
                 .For(x => x.Year)
                 .Ignore();
 
-            Assert.Equal(0, FSTests.gen(configurationMax).Year);
+            Assert.Equal(0, Configuration.gen(configurationMax).Year);
         }
 
 

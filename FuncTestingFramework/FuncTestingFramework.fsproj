@@ -5,10 +5,10 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="Types.fs" />
         <Compile Include="Generator.fs" />
         <Compile Include="ExpressionBuilder.fs" />
         <Compile Include="Object.fs" />
-        <Compile Include="Program.fs" />
         <None Include="test.fsx" />
     </ItemGroup>
 
