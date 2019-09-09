@@ -2,11 +2,9 @@ namespace rec FuncTestingFramework.ObjectExtensions
 open FuncTestingFramework.ExpressionBuilder
 open FuncTestingFramework.Generator
 open System
-open System
 open System.Collections.Generic
 open System.Linq.Expressions
 open FSharp.Quotations.Evaluator.QuotationEvaluationExtensions
-open FuncTestingFramework.ExpressionBuilder
 open FuncTestingFramework.Types
 
 type Object<'a>(storage: Storage<'a>) =
@@ -43,7 +41,7 @@ type Object<'a>(storage: Storage<'a>) =
        SequenceInt(storage, path);
 
     member __.For(path: Expression<Func<'a, 'c>>) =
-        ClassT<'a, 'c>([],path)
+        ClassT<'a, 'c>([], path)
 
 type ClassT<'a, 'd>(store: Storage<'a>, path: Path<'a, 'd>) =
     inherit Object<'a>(store)
@@ -53,9 +51,15 @@ type ClassT<'a, 'd>(store: Storage<'a>, path: Path<'a, 'd>) =
     member __.Ignore() =
         ClassT((ObjectExpressions.ignore path) :: store, path)
 
-//    member __.ForNested<'c>(deepPath: Path<'c, 'd>): ClassT<'c, 'd> =
-//        let invoke = Expression.Invoke(deepPath.Body, path.Body)
-//        ClassT<'c, 'd>([], path)
+    member __.ForNested(deepPath: Func<Object<'d>, Object<'d>>): Object<'a> =
+        let objConf = deepPath.Invoke(Object<'d>([]))
+        let gen = Configuration.gen objConf
+        let param = Expression.Parameter(typeof<'a>)
+        let q = Expression.Assign(path.Body, cons(gen))
+        let lambda = Expression.Lambda<Func<'a, 'a>>(q, param);
+        let func = lambda.Compile();
+        let expr = <@ fun x -> func.Invoke(x) |> ignore; x @>
+        Object<'a>(expr :: store)
 
 type DecimalT<'a>(store: Storage<'a>, path: Path<'a, decimal>) =
      inherit Object<'a>(store)
