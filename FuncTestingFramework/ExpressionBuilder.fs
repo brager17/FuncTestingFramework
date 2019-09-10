@@ -3,11 +3,8 @@ open FuncTestingFramework.Types
 open System
 open System.Collections.Generic
 open System.Linq.Expressions
-open System.Text
 open FSharp.Quotations.Evaluator.QuotationEvaluationExtensions
 open FuncTestingFramework.Generator
-
-
 
 let cons = Expression.Constant
 let lambda<'a> e p = Expression.Lambda<'a>(e, p)

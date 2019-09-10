@@ -74,7 +74,7 @@ type SequenceClassT<'a, 'd>(store: Storage<'a>, path: Path<'a, IEnumerable<'d>>)
     member __.ForItem(storage: SequenceNestedClassConfiguration<'d>) =
         let mutableFunc =
             let nullElement = Object<'d>([])
-            let storage = storage.Invoke(nullElement).Storage |> Seq.map(fun x -> x.Compile())
+            let storage = storage.Invoke(nullElement).Storage |> Seq.map(fun x -> x.Compile()) |> Seq.toList
             <@
             fun x ->
                let res = path.Compile().Invoke(x)
