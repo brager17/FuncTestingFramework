@@ -37,6 +37,6 @@ namespace FuncTestingFrameworkClient
         public IEnumerable<decimal> Decimals { get; set; }
 
         public IEnumerable<string> Names { get; set; }
-//        public IEnumerable<NestedPerson> Persons { get; set; }
+        public IEnumerable<NestedPerson> Persons { get; set; }
     }
 }

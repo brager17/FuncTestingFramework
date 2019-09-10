@@ -3,6 +3,8 @@ open FuncTestingFramework.ExpressionBuilder
 open FuncTestingFramework.Generator
 open System
 open System.Collections.Generic
+open System.Collections.Generic
+open System.Collections.Generic
 open System.Linq.Expressions
 open FSharp.Quotations.Evaluator.QuotationEvaluationExtensions
 open FuncTestingFramework.Types
@@ -43,6 +45,10 @@ type Object<'a>(storage: Storage<'a>) =
     member __.For(path: Expression<Func<'a, 'c>>) =
         ClassT<'a, 'c>([], path)
 
+    member __.For(path: Expression<Func<'a, IEnumerable<'c>>>) =
+        SequenceClassT<'a, 'c>([], path)
+
+type NestedClassConfiguration<'a> = Func<Object<'a>, Object<'a>>
 type ClassT<'a, 'd>(store: Storage<'a>, path: Path<'a, 'd>) =
     inherit Object<'a>(store)
     member __.UseValue((value: 'd)) =
@@ -51,25 +57,34 @@ type ClassT<'a, 'd>(store: Storage<'a>, path: Path<'a, 'd>) =
     member __.Ignore() =
         ClassT((ObjectExpressions.ignore path) :: store, path)
 
-    member __.ForNested(deepPath: Func<Object<'d>, Object<'d>>): Object<'a> =
-        let func =
-            <@ fun x ->
-                let objD = deepPath.Invoke(Object<'d>([]))
-                let v = FunctionTester.generateByType typeof<'d> :?> 'd
-                objD.Storage
-                    |> Seq.map (fun x -> x.CompileUntyped() :?> 'd -> 'd)
-                    |> Seq.map (fun t -> t v)
-                    |> Seq.toList
-                    |> ignore
-
-                let a = assign path.Body (cons (v))
-                let lambda = lambda<Action<'a>> a (path.Parameters |> Seq.toArray)
-                lambda.Compile().Invoke(x);
-                x
-             @>
+    member __.ForNested(deepPath: NestedClassConfiguration<'d>): Object<'a> =
+        let objD = deepPath.Invoke(Object<'d>([]))
+        let func = ObjectExpressions.forNested path objD.Storage
         Object<'a>(func :: store)
 
+type SequenceNestedClassConfiguration<'a> = Func<Object<'a>, Object<'a>>
+type SequenceClassT<'a, 'd>(store: Storage<'a>, path: Path<'a, IEnumerable<'d>>) =
+    inherit Object<'a>(store)
+    member __.UseValue(value: IEnumerable<'d>) =
+        SequenceClassT(((ObjectExpressions.useValue path value) :: store), path)
 
+    member __.Ignore() =
+        SequenceClassT(((ObjectExpressions.ignore path) :: store), path)
+
+    member __.ForItem(storage: SequenceNestedClassConfiguration<'d>) =
+        let mutableFunc =
+            let nullElement = Object<'d>([])
+            let storage = storage.Invoke(nullElement).Storage |> Seq.map(fun x -> x.Compile())
+            <@
+            fun x ->
+               let res = path.Compile().Invoke(x)
+                       |> Seq.collect (fun x -> storage |> Seq.map (fun f -> f x))
+                       |> Seq.toList
+               let lambda = lambda<Action<'a>> (assign path.Body (cons res)) (path.Parameters |> Seq.toArray)
+               lambda.Compile().Invoke(x)
+               x
+            @>
+        SequenceClassT(mutableFunc :: store, path)
 
 type DecimalT<'a>(store: Storage<'a>, path: Path<'a, decimal>) =
      inherit Object<'a>(store)
@@ -240,10 +255,8 @@ type BooleanT<'a>(store: Storage<'a>, path: Path<'a, bool>) =
 
 type BooleanSequenceConfiguration = Func<BooleanT<Value<bool>>, BooleanT<Value<bool>>>
 
-
 type BooleanSequence<'a>(store: Storage<'a>, path: Path<'a, IEnumerable<bool>>) =
          inherit Object<'a>(store)
-
          member __.UseValue(value: IEnumerable<bool>) =
              BooleanSequence(((ObjectExpressions.useValue path value) :: store), path)
 
@@ -261,9 +274,9 @@ type BooleanSequence<'a>(store: Storage<'a>, path: Path<'a, IEnumerable<bool>>) 
 module Configuration =
     let Build<'a>() = Object<'a>([])
 
-    let gen<'a> (obj: Object<'a>) =
+    let gen<'a> (o: Object<'a>) =
         let v = FunctionTester.generateByType typeof<'a> :?> 'a
-        obj.Storage
+        o.Storage
         |> Seq.map (fun x -> x.CompileUntyped() :?> 'a -> 'a)
         |> Seq.map (fun t -> t v)
         |> Seq.toList

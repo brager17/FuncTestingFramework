@@ -1,6 +1,8 @@
 module FuncTestingFramework.Generator
 open System
 open System.Collections
+open System.Linq
+
 type TupleElementTypes = Type array
 
 [<RequireQualifiedAccess>]
@@ -39,6 +41,7 @@ module FunctionTester =
         | IEnumerableString
         | IEnumerableBool
 
+   
     let rec (|GetType|) type' =
             match type' with
             | t when t = typeof<Int32> -> Int32'
@@ -61,6 +64,9 @@ module FunctionTester =
             | t when t.IsClass -> Class
             | _ -> failwith "Not Supported"
 
+    let enumerableCast toType (enumerable: IEnumerable) =
+        typeof<Enumerable>.GetMethod("Cast").MakeGenericMethod([|toType|]).Invoke(null, [| enumerable |])
+    
     let rec generateByType (tp: Type) =
         match tp with
         | GetType Int32' -> (generator._int_32()) :> obj
@@ -73,7 +79,7 @@ module FunctionTester =
         | GetType IEnumerableDecimal -> Seq.init 100 (fun _ -> generateByType typeof<decimal> :?> decimal) :> obj
         | GetType IEnumerableDateTime -> Seq.init 100 (fun _ -> generateByType typeof<DateTime> :?> DateTime) :> obj
         | GetType IEnumerableString -> Seq.init 100 (fun _ -> generateByType typeof<string> :?> string) :> obj
-        | GetType(IEnumerableClass classType) -> Seq.init 100 (fun _ -> generateByType classType) :> obj
+        | GetType(IEnumerableClass classType) -> enumerableCast classType (Seq.init 100 (fun _ -> generateByType classType))
         | GetType(IEnumerableBool) -> Seq.init 100 (fun _ -> generateByType typeof<bool>) :> obj
         | GetType Class ->
             let new' = Activator.CreateInstance(tp)
