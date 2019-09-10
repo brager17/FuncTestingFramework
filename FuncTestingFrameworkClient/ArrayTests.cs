@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using FuncTestingFramework;
 using FuncTestingFramework.ObjectExtensions;
 using Xunit;
 using Xunit.Abstractions;
@@ -127,7 +128,7 @@ namespace FuncTestingFrameworkClient
                 .ForItem(x => x.Interval(min, max));
 
             var person = Configuration.gen(configuration);
-            Assert.All(person.Decimals, dec => { Assert.True(dec > min && dec < max); });
+            Assert.All(person.Decimals, dec => { Assert.True(dec >= min && dec <= max); });
         }
 
 

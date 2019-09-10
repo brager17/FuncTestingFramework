@@ -34,39 +34,26 @@ module FunctionTester =
         | Decimal'
         | Boolean'
         | Class
-        | IEnumerableInt
-        | IEnumerableDateTime
-        | IEnumerableDecimal
-        | IEnumerableClass of Type
-        | IEnumerableString
-        | IEnumerableBool
+        | IEnumerable of Type
 
-   
-    let rec (|GetType|) type' =
+
+    let rec (|GetType|_|) type' =
             match type' with
-            | t when t = typeof<Int32> -> Int32'
-            | t when t = typeof<Int64> -> Int64'
-            | t when t = typeof<string> -> String'
-            | t when t = typeof<DateTime> -> DateTime'
-            | t when t = typeof<Decimal> -> Decimal'
-            | t when t = typeof<bool> -> Boolean'
+            | t when t = typeof<Int32> -> Some Int32'
+            | t when t = typeof<Int64> -> Some Int64'
+            | t when t = typeof<string> -> Some String'
+            | t when t = typeof<DateTime> -> Some DateTime'
+            | t when t = typeof<Decimal> -> Some Decimal'
+            | t when t = typeof<bool> -> Some Boolean'
             | t when t.IsGenericType && t.GetInterfaces() |> Seq.exists (fun inf -> inf = typeof<IEnumerable>) ->
                 let generic = t |> (fun x -> x.GenericTypeArguments |> Array.head)
-                match generic with
-                | GetType Int32' -> IEnumerableInt
-                | GetType DateTime' -> IEnumerableDateTime
-                | GetType Decimal' -> IEnumerableDecimal
-                | GetType Class -> IEnumerableClass generic
-                | GetType String' -> IEnumerableString
-                | GetType Boolean' -> IEnumerableBool
-                | _ -> failwith "Not Supported"
-
-            | t when t.IsClass -> Class
-            | _ -> failwith "Not Supported"
+                Some <| IEnumerable generic
+            | t when t.IsClass -> Some <| Class
+            | _ -> None
 
     let enumerableCast toType (enumerable: IEnumerable) =
-        typeof<Enumerable>.GetMethod("Cast").MakeGenericMethod([|toType|]).Invoke(null, [| enumerable |])
-    
+        typeof<Enumerable>.GetMethod("Cast").MakeGenericMethod([| toType |]).Invoke(null, [| enumerable |])
+
     let rec generateByType (tp: Type) =
         match tp with
         | GetType Int32' -> (generator._int_32()) :> obj
@@ -75,12 +62,7 @@ module FunctionTester =
         | GetType DateTime' -> generator.date() :> obj
         | GetType Boolean' -> generator.bool() :> obj
         | GetType Decimal' -> generator._decimal() :> obj
-        | GetType IEnumerableInt -> Seq.init 100 (fun _ -> generateByType typeof<int> :?> int) :> obj
-        | GetType IEnumerableDecimal -> Seq.init 100 (fun _ -> generateByType typeof<decimal> :?> decimal) :> obj
-        | GetType IEnumerableDateTime -> Seq.init 100 (fun _ -> generateByType typeof<DateTime> :?> DateTime) :> obj
-        | GetType IEnumerableString -> Seq.init 100 (fun _ -> generateByType typeof<string> :?> string) :> obj
-        | GetType(IEnumerableClass classType) -> enumerableCast classType (Seq.init 100 (fun _ -> generateByType classType))
-        | GetType(IEnumerableBool) -> Seq.init 100 (fun _ -> generateByType typeof<bool>) :> obj
+        | GetType(IEnumerable classType) -> enumerableCast classType (Seq.init 100 (fun _ -> generateByType classType))
         | GetType Class ->
             let new' = Activator.CreateInstance(tp)
             new'.GetType().GetProperties()
@@ -88,4 +70,5 @@ module FunctionTester =
                 let newValue = generateByType p.PropertyType
                 p.SetValue(new', newValue))
             new'
+        | _ -> failwith "Not Supported"
 
