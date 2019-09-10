@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FuncTestingFramework;
 using FuncTestingFramework.ObjectExtensions;
 using Xunit;
 using static FuncTestingFrameworkClient.Generators;

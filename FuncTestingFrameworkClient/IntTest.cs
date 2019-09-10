@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using FuncTestingFramework;
 using Xunit;
 using FuncTestingFramework.ObjectExtensions;
 

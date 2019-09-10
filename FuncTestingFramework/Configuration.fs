@@ -2,8 +2,6 @@ module FuncTestingFramework.Configuration
 open FSharp.Quotations.Evaluator.QuotationEvaluationExtensions
 open FuncTestingFramework.Generator
 open FuncTestingFramework.ObjectExtensions
-
-module Configuration =
     let Build<'a>() = Object<'a>([])
 
     let gen<'a> (obj: Object<'a>) =

@@ -270,15 +270,3 @@ type BooleanSequence<'a>(store: Storage<'a>, path: Path<'a, IEnumerable<bool>>) 
                ObjectExpressions.forItem path storage
            BooleanSequence(mutableFunc :: store, path)
 
-
-module Configuration =
-    let Build<'a>() = Object<'a>([])
-
-    let gen<'a> (o: Object<'a>) =
-        let v = FunctionTester.generateByType typeof<'a> :?> 'a
-        o.Storage
-        |> Seq.map (fun x -> x.CompileUntyped() :?> 'a -> 'a)
-        |> Seq.map (fun t -> t v)
-        |> Seq.toList
-        |> ignore
-        v

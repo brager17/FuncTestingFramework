@@ -1,4 +1,4 @@
-using FuncTestingFramework.ObjectExtensions;
+using FuncTestingFramework;
 using Xunit;
 namespace FuncTestingFrameworkClient
 {
