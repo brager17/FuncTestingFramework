@@ -1,15 +1,37 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace CSharpFuncTestingFramework
 {
     public class ObjectT<T>
     {
-        internal Expression<Func<T, T>> Storage { get; set; }
+        internal IEnumerable<Expression<Func<T, T>>> Storage { get; set; }
 
-        public ObjectT(Expression<Func<T, T>> storage)
+        public ObjectT(IEnumerable<Expression<Func<T, T>>> storage)
         {
             Storage = storage;
+        }
+
+        public IntT<int> For(Expression<Func<T, int>> path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public StringT<int> For(Expression<Func<T, string>> path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DecimalT<T> For(Expression<Func<T, decimal>> path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public DateTimeT<int> For(Expression<Func<T, DateTime>> path)
+        {
+            throw new NotImplementedException();
         }
     }
 
@@ -21,12 +43,26 @@ namespace CSharpFuncTestingFramework
         {
             Path = path;
         }
+
+        public abstract ObjectT<T> UseValue(T1 value);
+
+        public abstract ObjectT<T> Ignore();
     }
 
     public class IntT<T> : PathObject<T, int>
     {
         public IntT(Expression<Func<T, T>> storage, Expression<Func<T, int>> path) : base(storage, path)
         {
+        }
+
+        public override ObjectT<T> UseValue(int value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ObjectT<T> Ignore()
+        {
+            throw new NotImplementedException();
         }
     }
 
