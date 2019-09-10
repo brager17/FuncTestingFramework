@@ -14,8 +14,7 @@ let assign l r =
 
 
 type Value<'a>(v: 'a) =
-   let mutable _v = v
-   member this.V with get () = _v and set (v) = _v <- v;
+   member val V = v with get,set
    static member GetLambda() =
         let param = Expression.Parameter(typeof<Value<'a>>)
         let prop = Expression.Property(param, typeof<Value<'a>>.GetProperty("V"))
