@@ -52,14 +52,24 @@ type ClassT<'a, 'd>(store: Storage<'a>, path: Path<'a, 'd>) =
         ClassT((ObjectExpressions.ignore path) :: store, path)
 
     member __.ForNested(deepPath: Func<Object<'d>, Object<'d>>): Object<'a> =
-        let objConf = deepPath.Invoke(Object<'d>([]))
-        let gen = Configuration.gen objConf
-        let param = Expression.Parameter(typeof<'a>)
-        let q = Expression.Assign(path.Body, cons(gen))
-        let lambda = Expression.Lambda<Func<'a, 'a>>(q, param);
-        let func = lambda.Compile();
-        let expr = <@ fun x -> func.Invoke(x) |> ignore; x @>
-        Object<'a>(expr :: store)
+        let func =
+            <@ fun x ->
+                let objD = deepPath.Invoke(Object<'d>([]))
+                let v = FunctionTester.generateByType typeof<'d> :?> 'd
+                objD.Storage
+                    |> Seq.map (fun x -> x.CompileUntyped() :?> 'd -> 'd)
+                    |> Seq.map (fun t -> t v)
+                    |> Seq.toList
+                    |> ignore
+
+                let a = assign path.Body (cons (v))
+                let lambda = lambda<Action<'a>> a (path.Parameters |> Seq.toArray)
+                lambda.Compile().Invoke(x);
+                x
+             @>
+        Object<'a>(func :: store)
+
+
 
 type DecimalT<'a>(store: Storage<'a>, path: Path<'a, decimal>) =
      inherit Object<'a>(store)
@@ -252,7 +262,7 @@ module Configuration =
     let Build<'a>() = Object<'a>([])
 
     let gen<'a> (obj: Object<'a>) =
-        let v = FunctionTester.generateByType typeof<'t> :?> 't
+        let v = FunctionTester.generateByType typeof<'a> :?> 'a
         obj.Storage
         |> Seq.map (fun x -> x.CompileUntyped() :?> 'a -> 'a)
         |> Seq.map (fun t -> t v)

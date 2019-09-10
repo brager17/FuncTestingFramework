@@ -9,6 +9,7 @@
         <Compile Include="Generator.fs" />
         <Compile Include="ExpressionBuilder.fs" />
         <Compile Include="Object.fs" />
+        <Compile Include="Configuration.fs" />
         <None Include="test.fsx" />
     </ItemGroup>
 

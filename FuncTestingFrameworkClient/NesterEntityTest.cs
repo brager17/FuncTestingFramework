@@ -11,9 +11,11 @@ namespace FuncTestingFrameworkClient
             var ignoreConfiguration = Configuration
                 .Build<Person>()
                 .For(x => x.NestedPerson.Address)
-                .ForNested(x => x.For(xx => xx.City).Length(1).For(xx => xx.City2));
+                .ForNested(x => x.For(y => y.City).UseValue("city"));
 
             var result = Configuration.gen(ignoreConfiguration);
+
+            Assert.Equal(result.NestedPerson.Address.City, "city");
         }
     }
 }

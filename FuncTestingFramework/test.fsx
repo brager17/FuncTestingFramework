@@ -1,10 +1,7 @@
 open System
 open System.Linq.Expressions
 
-#r @"C:\Users\evgeniy\.nuget\packages\fsharp.quotations.evaluator\1.1.3\lib\netstandard2.0\FSharp.Quotations.Evaluator.dll"
 open Microsoft.FSharp.Quotations
-open FSharp.Quotations.Evaluator
-open FSharp.Quotations.Evaluator
 
 
 type Person(name: string, surname: string) =
