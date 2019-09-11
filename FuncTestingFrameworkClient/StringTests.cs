@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FuncTestingFramework;
-using FuncTestingFramework.ObjectExtensions;
+using CSharpFuncTestingFramework;
 using Xunit;
 using static FuncTestingFrameworkClient.Generators;
 

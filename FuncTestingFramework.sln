@@ -1,7 +1,5 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FuncTestingFramework", "FuncTestingFramework\FuncTestingFramework.fsproj", "{6D641A12-FC0D-492C-B575-434836E6F4AF}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FuncTestingFrameworkClient", "FuncTestingFrameworkClient\FuncTestingFrameworkClient.csproj", "{87EFF4E7-22DF-4316-A7A8-1C2A98795692}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CSharpFuncTestingFramework", "CSharpFuncTestingFramework\CSharpFuncTestingFramework.csproj", "{16DDD3FE-BFDB-4AA0-AE5D-EA8E1F505705}"
@@ -12,10 +10,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6D641A12-FC0D-492C-B575-434836E6F4AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6D641A12-FC0D-492C-B575-434836E6F4AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6D641A12-FC0D-492C-B575-434836E6F4AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6D641A12-FC0D-492C-B575-434836E6F4AF}.Release|Any CPU.Build.0 = Release|Any CPU
 		{87EFF4E7-22DF-4316-A7A8-1C2A98795692}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{87EFF4E7-22DF-4316-A7A8-1C2A98795692}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87EFF4E7-22DF-4316-A7A8-1C2A98795692}.Release|Any CPU.ActiveCfg = Release|Any CPU

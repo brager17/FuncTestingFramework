@@ -1,37 +1,40 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Linq.Expressions;
+using JetBrains.Annotations;
+using static CSharpFuncTestingFramework.ExpressionBuildExtensions;
 
 namespace CSharpFuncTestingFramework
 {
     public class ObjectT<T>
     {
-        internal IEnumerable<Expression<Func<T, T>>> Storage { get; set; }
+        public IEnumerable<Expression<Func<T, T>>> Storage { get; set; }
 
         public ObjectT(IEnumerable<Expression<Func<T, T>>> storage)
         {
             Storage = storage;
         }
 
-        public IntT<int> For(Expression<Func<T, int>> path)
+        public IntT<T> For(Expression<Func<T, int>> path)
         {
-            throw new NotImplementedException();
+            return new IntT<T>(Storage, path);
         }
 
-        public StringT<int> For(Expression<Func<T, string>> path)
+        public StringT<T> For(Expression<Func<T, string>> path)
         {
-            throw new NotImplementedException();
+            return new StringT<T>(Storage, path);
         }
 
         public DecimalT<T> For(Expression<Func<T, decimal>> path)
         {
-            throw new NotImplementedException();
+            return new DecimalT<T>(Storage, path);
         }
 
-        public DateTimeT<int> For(Expression<Func<T, DateTime>> path)
+        public DateTimeT<T> For(Expression<Func<T, DateTime>> path)
         {
-            throw new NotImplementedException();
+            return new DateTimeT<T>(Storage, path);
         }
     }
 
@@ -39,51 +42,136 @@ namespace CSharpFuncTestingFramework
     {
         protected Expression<Func<T, T1>> Path { get; set; }
 
-        protected PathObject(Expression<Func<T, T>> storage, Expression<Func<T, T1>> path) : base(storage)
+        protected PathObject(IEnumerable<Expression<Func<T, T>>> storage, Expression<Func<T, T1>> path) : base(storage)
         {
             Path = path;
         }
 
-        public abstract ObjectT<T> UseValue(T1 value);
+        public ObjectT<T> UseValue(T1 value)
+        {
+            return MemberInit(Path, value)
+                .Add(Storage)
+                .PipeTo(x => new ObjectT<T>(x));
+        }
 
-        public abstract ObjectT<T> Ignore();
+        public ObjectT<T> Ignore() =>
+            MemberInit(Path, default(T1))
+                .Add(Storage)
+                .PipeTo(x => new ObjectT<T>(x));
     }
 
     public class IntT<T> : PathObject<T, int>
     {
-        public IntT(Expression<Func<T, T>> storage, Expression<Func<T, int>> path) : base(storage, path)
+        public IntT(IEnumerable<Expression<Func<T, T>>> storage, Expression<Func<T, int>> path) : base(storage, path)
         {
         }
 
-        public override ObjectT<T> UseValue(int value)
+        public IntT<T> Min(int min)
         {
-            throw new NotImplementedException();
+            return MemberInit(Path, RandomGeneratorMeta.GenerateIntCall(min, int.MaxValue))
+                .Add(Storage)
+                .PipeTo(x => new IntT<T>(x, Path));
         }
 
-        public override ObjectT<T> Ignore()
+        public IntT<T> Max(int max)
         {
-            throw new NotImplementedException();
+            return MemberInit(Path, RandomGeneratorMeta.GenerateIntCall(int.MinValue, max))
+                .Add(Storage)
+                .PipeTo(x => new IntT<T>(x, Path));
+        }
+
+        public IntT<T> Interval(int min, int max)
+        {
+            return MemberInit(Path, RandomGeneratorMeta.GenerateIntCall(min, max))
+                .Add(Storage)
+                .PipeTo(x => new IntT<T>(x, Path));
+        }
+
+        public IntT<T> Positive()
+        {
+            return MemberInit(Path, RandomGeneratorMeta.GenerateIntCall(0, int.MaxValue))
+                .Add(Storage)
+                .PipeTo(x => new IntT<T>(x, Path));
+        }
+
+
+        public IntT<T> Negative()
+        {
+            return MemberInit(Path, RandomGeneratorMeta.GenerateIntCall(int.MinValue, 0))
+                .Add(Storage)
+                .PipeTo(x => new IntT<T>(x, Path));
         }
     }
 
     public class StringT<T> : PathObject<T, string>
     {
-        public StringT(Expression<Func<T, T>> storage, Expression<Func<T, string>> path) : base(storage, path)
+        public StringT(IEnumerable<Expression<Func<T, T>>> storage, Expression<Func<T, string>> path) : base(storage,
+            path)
         {
+        }
+
+        public StringT<T> MinLength(int min)
+        {
+            Contract.Assert(min > 0, "length > 0");
+
+            return MemberInit(Path, RandomGeneratorMeta.GenerateStringCall(min, 10000))
+                .Add(Storage)
+                .PipeTo(x => new StringT<T>(x, Path));
+        }
+
+        public StringT<T> MaxLength(int max)
+        {
+            Contract.Assert(max < 10000, "length < 10000");
+            return MemberInit(Path, RandomGeneratorMeta.GenerateStringCall(0, max))
+                .Add(Storage)
+                .PipeTo(x => new StringT<T>(x, Path));
+        }
+
+        public StringT<T> Length(int length)
+        {
+            Contract.Assert(length > 0, "length > 0");
+            Contract.Assert(length < 10000, "length < 10000");
+           
+            return MemberInit(Path, RandomGeneratorMeta.GenerateStringCall(length, length))
+                .Add(Storage)
+                .PipeTo(x => new StringT<T>(x, Path));
         }
     }
 
     public class DecimalT<T> : PathObject<T, decimal>
     {
-        public DecimalT(Expression<Func<T, T>> storage, Expression<Func<T, decimal>> path) : base(storage, path)
+        public DecimalT(IEnumerable<Expression<Func<T, T>>> storage, Expression<Func<T, decimal>> path) : base(storage,
+            path)
         {
         }
     }
 
     public class DateTimeT<T> : PathObject<T, DateTime>
     {
-        public DateTimeT(Expression<Func<T, T>> storage, Expression<Func<T, DateTime>> path) : base(storage, path)
+        public DateTimeT(IEnumerable<Expression<Func<T, T>>> storage, Expression<Func<T, DateTime>> path) : base(
+            storage, path)
         {
+        }
+    }
+
+
+    public static class Configuration
+    {
+        public static ObjectT<T> Build<T>() => new ObjectT<T>(new List<Expression<Func<T, T>>>());
+
+        public static T gen<T>([CanBeNull] ObjectT<T> obj = null)
+        {
+            var value = (T) Activator.CreateInstance(typeof(T));
+
+            if (obj == null)
+                return value;
+
+            foreach (var func in obj.Storage.Select(x => x.Compile()))
+            {
+                func.Invoke(value);
+            }
+
+            return value;
         }
     }
 }
