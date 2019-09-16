@@ -112,7 +112,8 @@ namespace CSharpFuncTestingFramework
 
         public StringT<T> MinLength(int min)
         {
-            Contract.Assert(min > 0, "length > 0");
+            if (min > 0)
+                throw new ArgumentException("length > 0");
 
             return MemberInit(Path, RandomGeneratorMeta.GenerateStringCall(min, 10000))
                 .Add(Storage)
@@ -129,9 +130,12 @@ namespace CSharpFuncTestingFramework
 
         public StringT<T> Length(int length)
         {
-            Contract.Assert(length > 0, "length > 0");
-            Contract.Assert(length < 10000, "length < 10000");
-           
+            if (length > 0)
+                throw new ArgumentException("length > 0");
+
+            if (length < 10000)
+                throw new ArgumentException("length < 10000");
+
             return MemberInit(Path, RandomGeneratorMeta.GenerateStringCall(length, length))
                 .Add(Storage)
                 .PipeTo(x => new StringT<T>(x, Path));

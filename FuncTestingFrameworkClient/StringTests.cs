@@ -62,11 +62,15 @@ namespace FuncTestingFrameworkClient
         [MemberData(nameof(GenerateRandomInt32Less10000))]
         public void LengthTest(int length)
         {
+            var t = Configuration.Build<Person>()
+                .For(x => x.Name)
+                .Length(100000);
+
             var c1 = Configuration.Build<Person>()
                 .For(x => x.Name)
                 .Length(2);
             var r = Configuration.gen(c1);
-            
+
             var configuration = Configuration.Build<Person>()
                 .For(x => x.Name)
                 .Length(length);
