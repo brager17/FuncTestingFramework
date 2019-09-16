@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using CSharpFuncTestingFramework;
-using FuncTestingFramework;
-using FuncTestingFramework.ObjectExtensions;
 using Xunit;
 
 namespace FuncTestingFrameworkClient

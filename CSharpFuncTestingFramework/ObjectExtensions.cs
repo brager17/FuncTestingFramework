@@ -159,17 +159,23 @@ namespace CSharpFuncTestingFramework
 
         public DateTimeT<T> Min(DateTime min)
         {
-            return null;
+            return MemberInit(Path, RandomGeneratorMeta.GenerateDateTimeCall(min, DateTime.MaxValue))
+                .Add(Storage)
+                .PipeTo(x => new DateTimeT<T>(x, Path));
         }
-        
+
         public DateTimeT<T> Max(DateTime max)
         {
-            return null;
+            return MemberInit(Path, RandomGeneratorMeta.GenerateDateTimeCall(DateTime.MinValue, max))
+                .Add(Storage)
+                .PipeTo(x => new DateTimeT<T>(x, Path));
         }
-        
+
         public DateTimeT<T> Interval(DateTime left, DateTime right)
         {
-            return null;
+            return MemberInit(Path, RandomGeneratorMeta.GenerateDateTimeCall(left, right))
+                .Add(Storage)
+                .PipeTo(x => new DateTimeT<T>(x, Path));
         }
     }
 
