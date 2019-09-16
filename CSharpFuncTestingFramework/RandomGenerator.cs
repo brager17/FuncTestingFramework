@@ -10,6 +10,9 @@ namespace CSharpFuncTestingFramework
         public static Random rnd = new Random();
         public static int GenerateInt(int left = int.MinValue, int right = int.MaxValue) => rnd.Next(left, right);
 
+        public static int GenerateLong(long left = long.MinValue, long right = long.MaxValue)
+            =>
+
         public static char GenerateChar() =>
             (rnd.Next() % 2 == 0 ? rnd.Next(65, 90) : rnd.Next(97, 122)).PipeTo(Convert.ToChar);
 
@@ -17,6 +20,9 @@ namespace CSharpFuncTestingFramework
             Enumerable.Repeat(0, rnd.Next(left, right))
                 .Select(_ => GenerateChar())
                 .PipeTo(x => new string(x.ToArray()));
+
+        public static DateTime GenerateDateTime(DateTime left, DateTime right) =>
+            GenerateInt(DateTime.MinValue.Ticks, DateTime.MaxValue.Ticks)
     }
 
     public static class RandomGeneratorMeta

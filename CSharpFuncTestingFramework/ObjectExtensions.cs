@@ -156,6 +156,21 @@ namespace CSharpFuncTestingFramework
             storage, path)
         {
         }
+
+        public DateTimeT<T> Min(DateTime min)
+        {
+            return null;
+        }
+        
+        public DateTimeT<T> Max(DateTime max)
+        {
+            return null;
+        }
+        
+        public DateTimeT<T> Interval(DateTime left, DateTime right)
+        {
+            return null;
+        }
     }
 
 
